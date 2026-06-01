@@ -7,11 +7,13 @@ import com.heptha.backend.entity.User;
 import com.heptha.backend.repository.UserRepository;
 import com.heptha.backend.service.AuthService;
 import com.heptha.backend.utils.JwtUtil;
+import com.heptha.backend.exception.UserAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User already exists");
+        }
 
         User user = User.builder()
                 .name(request.getName())

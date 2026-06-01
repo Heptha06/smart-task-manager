@@ -3,6 +3,10 @@ package com.heptha.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -24,4 +28,8 @@ public class User {
     private String password;
 
     private String role;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Task> tasks;
 }

@@ -2,6 +2,7 @@ package com.heptha.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "tasks")
@@ -26,5 +27,7 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Schema(hidden = true)
     private User user;
+    
 }

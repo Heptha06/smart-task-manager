@@ -6,6 +6,10 @@ import com.heptha.backend.entity.User;
 import com.heptha.backend.repository.TaskRepository;
 import com.heptha.backend.repository.UserRepository;
 import com.heptha.backend.service.TaskService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,4 +72,13 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.deleteById(id);
     }
+    
+    @Override
+    public Page<Task> getPaginatedTasks(int page,int size,String sortBy) {
+
+        Pageable pageable =PageRequest.of(page,size,Sort.by(sortBy).descending());
+
+        return taskRepository.findAll(pageable);
+    }
+    
 }

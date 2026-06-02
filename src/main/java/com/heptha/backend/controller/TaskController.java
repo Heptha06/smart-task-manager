@@ -1,11 +1,15 @@
 package com.heptha.backend.controller;
 
+import com.heptha.backend.dto.ApiResponse;
 import com.heptha.backend.dto.TaskRequest;
 import com.heptha.backend.entity.Task;
 import com.heptha.backend.service.TaskService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,37 +21,65 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @PostMapping
-    public Task createTask(@RequestBody TaskRequest request) {
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<Task>> createTask(
+            @RequestBody TaskRequest request) {
 
-        return taskService.createTask(request);
+        Task task = taskService.createTask(request);
+
+        ApiResponse<Task> response =
+                ApiResponse.<Task>builder()
+                        .success(true)
+                        .message("Task created successfully")
+                        .statusCode(201)
+                        .data(task)
+                        .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public List<Task> getAllTasks() {
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<Task>>> getAllTasks() {
 
-        return taskService.getAllTasks();
+        List<Task> tasks = taskService.getAllTasks();
+
+        ApiResponse<List<Task>> response =
+                ApiResponse.<List<Task>>builder()
+                        .success(true)
+                        .message("Tasks fetched successfully")
+                        .statusCode(200)
+                        .data(tasks)
+                        .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Task>> getTaskById(
+            @PathVariable Long id) {
 
-        return taskService.getTaskById(id);
+        Task task = taskService.getTaskById(id);
+
+        ApiResponse<Task> response =
+                ApiResponse.<Task>builder()
+                        .success(true)
+                        .message("Task fetched successfully")
+                        .statusCode(200)
+                        .data(task)
+                        .build();
+
+        return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/paginated")
+    public ResponseEntity<ApiResponse<Page<Task>>> getPaginatedTasks(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size,
+                        @RequestParam(defaultValue = "id") String sortBy) {
 
-    @PutMapping("/{id}")
-    public Task updateTask(
-            @PathVariable Long id,
-            @RequestBody TaskRequest request) {
+        Page<Task> tasks =taskService.getPaginatedTasks(page,size,sortBy);
 
-        return taskService.updateTask(id, request);
-    }
+        ApiResponse<Page<Task>> response =ApiResponse.<Page<Task>>builder().success(true)
+                        .message("Tasks fetched successfully").statusCode(200).data(tasks).build();
 
-    @DeleteMapping("/{id}")
-    public String deleteTask(@PathVariable Long id) {
-
-        taskService.deleteTask(id);
-
-        return "Task deleted successfully";
+        return ResponseEntity.ok(response);
     }
 }

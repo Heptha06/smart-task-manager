@@ -6,6 +6,9 @@ import lombok.*;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "users")
@@ -25,11 +28,13 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private String role;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Schema(hidden = true)
     private List<Task> tasks;
 }
